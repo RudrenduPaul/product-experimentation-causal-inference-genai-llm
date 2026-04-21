@@ -2,7 +2,7 @@
 
 Working Python notebooks for measuring the causal impact of AI features, prompt changes, model routing decisions, agentic product launches, and staged LLM rollouts in production.
 
-Every notebook runs on a single shared synthetic dataset (`data/synthetic_llm_logs.csv`) that simulates a realistic SaaS product with an AI assistant feature. You clone the repo, run `generate_data.py` once, and every technique runs against the same 10,000-row dataset so you can compare methods directly.
+Every notebook runs on a single shared synthetic dataset (`data/synthetic_llm_logs.csv`) that simulates a realistic SaaS product with an AI assistant feature. You clone the repo, run `generate_data.py` once, and every technique runs against the same 50,000-row dataset so you can compare methods directly.
 
 ## Why this repo exists
 
@@ -15,7 +15,7 @@ git clone https://github.com/RudrenduPaul/product-experimentation-causal-inferen
 cd product-experimentation-causal-inference-genai-llm
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python data/generate_data.py --seed 42 --n-users 10000 --out data/synthetic_llm_logs.csv
+python data/generate_data.py --seed 42 --n-users 50000 --out data/synthetic_llm_logs.csv
 jupyter notebook 01_did_staged_rollouts/did_demo.ipynb
 ```
 
@@ -42,7 +42,7 @@ product-experimentation-causal-inference-genai-llm/
   requirements.txt
   data/
     generate_data.py             # Reproducible synthetic LLM product dataset
-    synthetic_llm_logs.csv       # 10,000 rows, 16 columns (generated, gitignored)
+    synthetic_llm_logs.csv       # 50,000 rows, 16 columns (generated, gitignored)
   01_did_staged_rollouts/
   02_propensity_opt_in/
   03_rdd_confidence_threshold/
