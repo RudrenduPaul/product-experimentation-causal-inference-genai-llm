@@ -71,13 +71,22 @@ def generate(seed: int = 42, n_users: int = 10000) -> pd.DataFrame:
     effect_premium_model = 0.06      # +6pp from premium routing
     effect_staged_rollout = 0.05     # +5pp from the staged feature launch
 
+    # Shared week-level shock: same market/seasonal effect hits all users
+    # in the same signup_week, regardless of wave. When aggregated to weekly
+    # means, both waves show the same pattern — making parallel trends visible.
+    # Using i.i.d. (not a random walk) to avoid cumulative drift separating lines.
+    n_weeks_total = 52
+    weekly_shock = rng.normal(0, 0.045, size=n_weeks_total)
+    week_shock_per_user = weekly_shock[np.clip(signup_week, 0, n_weeks_total - 1)]
+
     task_completion_prob = np.clip(
         base
         + effect_new_prompt * prompt_variant
         + effect_agent_mode * opt_in_agent_mode
         + effect_premium_model * routed_to_premium
         + effect_staged_rollout * treated_post
-        + rng.normal(0, 0.05, size=n_users),
+        + week_shock_per_user            # shared week shock (forces co-movement)
+        + rng.normal(0, 0.02, size=n_users),   # small individual noise
         0.01, 0.99
     )
     task_completed = rng.binomial(1, task_completion_prob)
