@@ -85,7 +85,7 @@ def generate(seed: int = 42, n_users: int = 10000) -> pd.DataFrame:
     # Small wave-1 level offset so wave 1 sits consistently above wave 2
     # in the pre-period (more realistic and easier to read on the chart).
     # This is absorbed by the `treated` dummy in regression — no bias.
-    wave_offset = np.where(wave == 1, 0.03, 0.0)
+    wave_offset = np.where(wave == 1, 0.04, 0.0)
 
     task_completion_prob = np.clip(
         base
