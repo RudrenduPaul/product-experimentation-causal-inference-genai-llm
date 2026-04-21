@@ -87,12 +87,12 @@ Ground-truth effects baked into the generator (for validating that estimators re
 
 ## Author
 
-Rudrendu Paul is an AI/ML practitioner with 15+ years of enterprise experience. He writes about product experimentation, LLM evaluation engineering, causal inference for AI products, and production ML systems. His book *LLM Evaluation Engineering* (CRC Press / Taylor & Francis) is forthcoming.
+Rudrendu Paul is an AI/ML practitioner with 15+ years of enterprise experience. He writes about product experimentation, LLM evaluation engineering, causal inference for AI products, and production ML systems.
 
-- Medium: [rudrendupaul.medium.com](https://rudrendupaul.medium.com/)
-- ORCID: [0009-0008-0141-4690](https://orcid.org/0009-0008-0141-4690)
 - LinkedIn: [linkedin.com/in/rudrendupaul](https://www.linkedin.com/in/rudrendupaul/)
+- ORCID: [0009-0008-0141-4690](https://orcid.org/0009-0008-0141-4690)
 - freeCodeCamp: [freecodecamp.org/news/author/rudrendupaul](https://www.freecodecamp.org/news/author/rudrendupaul/)
+- Medium: [rudrendupaul.medium.com](https://rudrendupaul.medium.com/)
 
 ## License
 

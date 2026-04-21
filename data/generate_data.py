@@ -71,22 +71,31 @@ def generate(seed: int = 42, n_users: int = 10000) -> pd.DataFrame:
     effect_premium_model = 0.06      # +6pp from premium routing
     effect_staged_rollout = 0.05     # +5pp from the staged feature launch
 
-    # Shared week-level shock: same market/seasonal effect hits all users
-    # in the same signup_week, regardless of wave. When aggregated to weekly
-    # means, both waves show the same pattern — making parallel trends visible.
-    # Using i.i.d. (not a random walk) to avoid cumulative drift separating lines.
+    # Smooth AR(1) shared week signal: both waves experience the same
+    # correlated market/seasonal fluctuations. AR(1) with rho=0.75 creates
+    # smooth week-to-week movement (no abrupt spikes) so the weekly aggregates
+    # look like gently rolling parallel lines rather than jagged noise.
     n_weeks_total = 52
-    weekly_shock = rng.normal(0, 0.045, size=n_weeks_total)
-    week_shock_per_user = weekly_shock[np.clip(signup_week, 0, n_weeks_total - 1)]
+    ar_signal = np.zeros(n_weeks_total)
+    for t in range(1, n_weeks_total):
+        ar_signal[t] = 0.75 * ar_signal[t - 1] + rng.normal(0, 0.010)
+    ar_signal -= ar_signal.mean()   # center so it doesn't shift overall level
+    week_signal_per_user = ar_signal[np.clip(signup_week, 0, n_weeks_total - 1)]
+
+    # Small wave-1 level offset so wave 1 sits consistently above wave 2
+    # in the pre-period (more realistic and easier to read on the chart).
+    # This is absorbed by the `treated` dummy in regression — no bias.
+    wave_offset = np.where(wave == 1, 0.03, 0.0)
 
     task_completion_prob = np.clip(
         base
+        + wave_offset                    # wave-1 level difference (time-invariant)
         + effect_new_prompt * prompt_variant
         + effect_agent_mode * opt_in_agent_mode
         + effect_premium_model * routed_to_premium
         + effect_staged_rollout * treated_post
-        + week_shock_per_user            # shared week shock (forces co-movement)
-        + rng.normal(0, 0.02, size=n_users),   # small individual noise
+        + week_signal_per_user           # smooth shared AR(1) signal
+        + rng.normal(0, 0.015, size=n_users),  # small individual noise
         0.01, 0.99
     )
     task_completed = rng.binomial(1, task_completion_prob)
