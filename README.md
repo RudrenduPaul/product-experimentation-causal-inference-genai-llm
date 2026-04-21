@@ -10,19 +10,19 @@ Standard A/B testing breaks for modern AI products. Rollouts happen in waves, us
 
 ## Companion articles (freeCodeCamp)
 
-| # | Article | Status |
-|---|---------|--------|
-| 0 | From A/B Tests to Causal Inference: How to Measure What Your LLM Features Actually Do in Production | Publishing |
-| 1 | Regression Models for Causal Inference: Estimating LLM Feature Impact with Python and statsmodels | Coming soon |
-| 2 | What Would Have Happened If We Shipped a Different Prompt? A Counterfactual Causal Inference Walkthrough | Coming soon |
-| 3 | When Users Opt Into Your AI Feature: Propensity Score Methods for Causal Inference in Python | Coming soon |
-| 4 | Uplift Modeling for Causal Inference: Finding the Users Your LLM Feature Actually Helps | Coming soon |
-| 5 | No Control Group, No Problem: Synthetic Control Methods for Causal Inference in Global LLM Rollouts | Coming soon |
-| 6 | When Your LLM Routing Is Confounded: Instrumental Variable Analysis for Clean Causal Inference | Coming soon |
-| 7 | The Threshold Trick: Regression Discontinuity Design for Causal Inference in Confidence-Based LLM Routing | Coming soon |
-| 8 | Shipping AI Features in Waves? Difference-in-Differences for Causal Inference on Staged LLM Rollouts | Coming soon |
-| 9 | Doubly Robust Estimation: The Safety Net for Causal Inference When Your LLM Experiment Is Noisy | Coming soon |
-| 10 | Causal Inference in Production: Lessons from How Airbnb, Netflix, Lyft, and Uber Measure AI Impact | Coming soon |
+| # | Article | Folder | Status |
+|---|---------|--------|--------|
+| 1 | Why A/B Testing Breaks for Staged AI Feature Rollouts (and How to Use Difference-in-Differences in Python Instead) | `01_did_staged_rollouts/` | Draft ready |
+| 2 | When Users Opt Into Your AI Feature: Propensity Score Methods for Causal Inference in Python | `02_propensity_opt_in/` | Draft ready |
+| 3 | The Threshold Trick: Regression Discontinuity Design for Causal Inference in Confidence-Based LLM Routing | `03_rdd_confidence_threshold/` | Draft ready |
+| 4 | No Control Group, No Problem: Synthetic Control Methods for Causal Inference in Global LLM Rollouts | `04_synthetic_control/` | Coming soon |
+| 5 | Uplift Modeling for Causal Inference: Finding the Users Your LLM Feature Actually Helps | `05_uplift_modeling/` | Coming soon |
+| 6 | Regression Models for Causal Inference: Estimating LLM Feature Impact with Python and statsmodels | `06_regression/` | Coming soon |
+| 7 | What Would Have Happened If We Shipped a Different Prompt? A Counterfactual Causal Inference Walkthrough | `07_counterfactual/` | Coming soon |
+| 8 | When Your LLM Routing Is Confounded: Instrumental Variable Analysis for Clean Causal Inference | `08_instrumental_variables/` | Coming soon |
+| 9 | Doubly Robust Estimation: The Safety Net for Causal Inference When Your LLM Experiment Is Noisy | `09_doubly_robust/` | Coming soon |
+| 10 | Causal Inference in Production: Lessons from How Airbnb, Netflix, Lyft, and Uber Measure AI Impact | `10_case_studies/` | Coming soon |
+| 11 (recap) | From A/B Tests to Causal Inference: A Practitioner's Map of How to Measure AI Feature Impact in Production | `11_recap/` | Publishes after Articles 1-10 are live |
 
 ## Quick start
 
@@ -32,7 +32,7 @@ cd causal-inference-for-genai-llm-applications
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python data/generate_data.py --seed 42 --n-users 10000 --out data/synthetic_llm_logs.csv
-jupyter notebook 00_foundation/foundation_intro.ipynb
+python 01_did_staged_rollouts/did_demo.py
 ```
 
 ## Repo structure
@@ -43,18 +43,18 @@ causal-inference-for-genai-llm-applications/
   requirements.txt
   data/
     generate_data.py             # Reproducible synthetic LLM product dataset
-    synthetic_llm_logs.csv       # 10,000 rows, 16 columns (generated)
-  00_foundation/                 # Article 0 notebook (all techniques at a glance)
-  01_regression/                 # Article 1
-  02_counterfactual/             # Article 2
-  03_propensity_score/           # Article 3
-  04_uplift/                     # Article 4
-  05_synthetic_control/          # Article 5
-  06_instrumental_variable/      # Article 6
-  07_rdd/                        # Article 7
-  08_did/                        # Article 8
-  09_doubly_robust/              # Article 9
-  10_case_studies/               # Article 10
+    synthetic_llm_logs.csv       # 10,000 rows, 16 columns (generated, gitignored)
+  01_did_staged_rollouts/        # Article 1 — difference-in-differences
+  02_propensity_opt_in/          # Article 2 — propensity score matching / IPW
+  03_rdd_confidence_threshold/   # Article 3 — regression discontinuity
+  04_synthetic_control/          # Article 4 (coming soon)
+  05_uplift_modeling/            # Article 5 (coming soon)
+  06_regression/                 # Article 6 (coming soon)
+  07_counterfactual/             # Article 7 (coming soon)
+  08_instrumental_variables/     # Article 8 (coming soon)
+  09_doubly_robust/              # Article 9 (coming soon)
+  10_case_studies/               # Article 10 (coming soon)
+  11_recap/                      # Article 11 — capstone recap (coming last)
 ```
 
 ## Dataset schema
