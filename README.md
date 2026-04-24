@@ -24,7 +24,7 @@ jupyter notebook 01_did_staged_rollouts/did_demo.ipynb
 | # | Method | Folder | Notebook |
 |---|--------|--------|---------|
 | 1 | Difference-in-Differences | `01_did_staged_rollouts/` | [did_demo.ipynb](01_did_staged_rollouts/did_demo.ipynb) |
-| 2 | Propensity Score Matching / IPW | `02_propensity_opt_in/` | `propensity_demo.ipynb` |
+| 2 | Propensity Score Matching / IPW | `02_propensity_opt_in/` | [psm_demo.ipynb](02_propensity_opt_in/psm_demo.ipynb) |
 | 3 | Regression Discontinuity Design | `03_rdd_confidence_threshold/` | `rdd_demo.ipynb` |
 | 4 | Synthetic Control | `04_synthetic_control/` | `synthetic_control_demo.ipynb` |
 | 5 | Uplift Modeling | `05_uplift_modeling/` | `uplift_demo.ipynb` |
