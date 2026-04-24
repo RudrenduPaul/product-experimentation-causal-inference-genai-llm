@@ -151,8 +151,8 @@ def make_figure_2_data_driven() -> None:
     treated_color = "#C44E52"
 
     fig, (ax_top, ax_bot) = plt.subplots(
-        nrows=2, ncols=1, figsize=(10.0, 6.6),
-        gridspec_kw={"height_ratios": [2.4, 1.0], "hspace": 0.35},
+        nrows=2, ncols=1, figsize=(10.0, 7.0),
+        gridspec_kw={"height_ratios": [2.4, 1.0], "hspace": 0.70},
     )
 
     # --- TOP: smooth KDE curves ---
@@ -177,10 +177,11 @@ def make_figure_2_data_driven() -> None:
     ax_top.axvspan(
         common_lo, common_hi, color="#EFEFEF", alpha=0.5, zorder=0,
     )
-    y_top = max(dens_c.max(), dens_t.max()) * 1.25
+    # More headroom so tier boxes sit in clean sky above the peaks
+    y_top = max(dens_c.max(), dens_t.max()) * 1.40
     ax_top.set_ylim(0, y_top)
 
-    # Mark the three engagement-tier cluster centers
+    # Mark the three engagement-tier cluster centers — tier boxes at very top
     for tier in tier_order:
         tier_df = df[df.engagement_tier == tier]
         center = tier_df.propensity.mean()
@@ -189,31 +190,37 @@ def make_figure_2_data_driven() -> None:
             zorder=1,
         )
         ax_top.text(
-            center, y_top * 0.96,
-            f"{tier}\n(p ≈ {center:.2f})",
-            ha="center", va="top", fontsize=9, color="#333333",
-            bbox=dict(boxstyle="round,pad=0.25", fc="white",
-                      ec=tier_colors[tier], lw=0.8),
+            center, y_top * 0.97,
+            f"{tier}  (p ≈ {center:.2f})",
+            ha="center", va="top", fontsize=9.5, color="#333333",
+            bbox=dict(boxstyle="round,pad=0.28", fc="white",
+                      ec=tier_colors[tier], lw=0.9),
         )
 
-    # Common support label placed in the low-density valley near p = 0.5
+    # Common support label in the near-zero-density valley between the
+    # medium and heavy peaks (around x = 0.50), well clear of every curve.
     ax_top.text(
         0.50, y_top * 0.55,
-        f"Common support: [{common_lo:.2f}, {common_hi:.2f}]\n"
+        f"Common support band: [{common_lo:.2f}, {common_hi:.2f}]\n"
         "both groups present across this range",
         ha="center", va="center", fontsize=9.5, color="#333333",
-        bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="#BBBBBB", lw=0.6),
+        bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="#BBBBBB",
+                  lw=0.6),
     )
 
     ax_top.set_xlabel("Propensity score  (predicted probability of opting in)")
     ax_top.set_ylabel("Density")
     ax_top.set_title(
         "Propensity score overlap on the 50,000-user synthetic dataset",
-        fontsize=12.5, loc="left",
+        fontsize=12.5, loc="left", pad=10,
     )
     ax_top.set_xlim(0.05, 0.75)
-    ax_top.legend(frameon=False, loc="upper left", fontsize=9.5,
-                  bbox_to_anchor=(0.01, 0.75))
+    # Legend lives in the horizontal gap between the two panels so nothing
+    # overlaps the density curves or the tier labels above.
+    ax_top.legend(
+        frameon=False, loc="upper center",
+        bbox_to_anchor=(0.5, -0.22), ncol=2, fontsize=10,
+    )
     ax_top.spines["top"].set_visible(False)
     ax_top.spines["right"].set_visible(False)
 
