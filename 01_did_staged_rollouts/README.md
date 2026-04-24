@@ -31,4 +31,7 @@ The ground-truth effect baked into `data/generate_data.py` is **+5 percentage po
 ## Files
 
 - `did_demo.ipynb` — executable notebook with pre-saved outputs; reproduces every code block from the article
+- `did_demo.py` — self-contained script equivalent of the notebook (same estimators, same outputs)
+- `did_parallel_trends.png` — Figure 1 (conceptual parallel-trends illustration; mirror of `images/article-1/did_parallel_trends.png`)
+- `parallel_trends.png` — Figure 2 (data-driven parallel-trends chart on the 50,000-user synthetic dataset; mirror of `images/article-1/parallel_trends.png`)
 - `README.md` — this file
