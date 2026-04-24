@@ -24,52 +24,92 @@ IMAGES_DIR = REPO_ROOT / "images" / "article-2"
 
 
 def make_figure_1_conceptual() -> None:
-    """Conceptual: treated skews right, control skews left; overlap shaded."""
+    """Conceptual: treated skews right, control skews left; overlap shaded.
+
+    Two stacked panels with zero overlap between text and plot data:
+      (top)    smooth KDE curves with only a legend in the corner
+      (bottom) a narrow label strip under the x-axis with three region
+               brackets (control-heavy, common support, treatment-heavy)
+    """
+    from scipy.stats import gaussian_kde
+
     rng = np.random.default_rng(7)
     treated = np.clip(rng.beta(6, 3, size=5000), 0.02, 0.98)
     control = np.clip(rng.beta(3, 6, size=5000), 0.02, 0.98)
 
-    fig, ax = plt.subplots(figsize=(9.0, 5.2))
-    bins = np.linspace(0, 1, 40)
+    lo, hi = 0.15, 0.85  # common support region
+    control_color = "#4C72B0"
+    treated_color = "#C44E52"
 
-    ax.hist(
-        control, bins=bins, density=True, alpha=0.55,
-        color="#4C72B0", label="Did not opt in",
-    )
-    ax.hist(
-        treated, bins=bins, density=True, alpha=0.55,
-        color="#C44E52", label="Opted in",
+    fig, (ax_top, ax_bot) = plt.subplots(
+        nrows=2, ncols=1, figsize=(10.0, 5.6),
+        gridspec_kw={"height_ratios": [5.0, 1.0], "hspace": 0.0},
+        sharex=True,
     )
 
-    ax.axvspan(0.15, 0.85, color="#DDDDDD", alpha=0.35, zorder=0)
-    ax.text(
-        0.50, 2.15, "Region of common support",
-        ha="center", va="center", fontsize=11, color="#333333",
-    )
-    ax.annotate(
-        "Control-heavy region\n(few treated users here)",
-        xy=(0.10, 1.7), xytext=(0.02, 2.5),
-        fontsize=9, color="#333333",
-        arrowprops=dict(arrowstyle="->", color="#555555", lw=0.8),
-    )
-    ax.annotate(
-        "Treatment-heavy region\n(few controls here)",
-        xy=(0.90, 1.7), xytext=(0.70, 2.5),
-        fontsize=9, color="#333333",
-        arrowprops=dict(arrowstyle="->", color="#555555", lw=0.8),
-    )
+    # --- TOP: smooth KDE curves ---
+    grid = np.linspace(0, 1, 400)
+    dens_c = gaussian_kde(control, bw_method=0.35)(grid)
+    dens_t = gaussian_kde(treated, bw_method=0.35)(grid)
 
-    ax.set_xlabel("Propensity score (predicted probability of opting in)")
-    ax.set_ylabel("Density")
-    ax.set_title(
+    ax_top.fill_between(grid, dens_c, alpha=0.45, color=control_color,
+                        label="Did not opt in")
+    ax_top.fill_between(grid, dens_t, alpha=0.45, color=treated_color,
+                        label="Opted in")
+    ax_top.plot(grid, dens_c, color=control_color, lw=1.5)
+    ax_top.plot(grid, dens_t, color=treated_color, lw=1.5)
+    ax_top.axvspan(lo, hi, color="#EFEFEF", alpha=0.5, zorder=0)
+
+    y_top = max(dens_c.max(), dens_t.max()) * 1.20
+    ax_top.set_ylim(0, y_top)
+    ax_top.set_xlim(0, 1)
+    ax_top.set_ylabel("Density")
+    ax_top.set_title(
         "Propensity score distributions separate treated and control groups",
-        fontsize=12, loc="left",
+        fontsize=12.5, loc="left",
     )
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 3.0)
-    ax.legend(frameon=False, loc="upper center")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
+    ax_top.legend(frameon=False, loc="upper center", ncol=2,
+                  bbox_to_anchor=(0.5, 1.0), fontsize=10)
+    ax_top.spines["top"].set_visible(False)
+    ax_top.spines["right"].set_visible(False)
+    ax_top.tick_params(labelbottom=False)
+
+    # --- BOTTOM: region label strip ---
+    ax_bot.set_xlim(0, 1)
+    ax_bot.set_ylim(0, 1)
+    ax_bot.set_yticks([])
+    for side in ("top", "left", "right"):
+        ax_bot.spines[side].set_visible(False)
+    ax_bot.spines["bottom"].set_visible(True)
+
+    # Three region brackets with labels beneath
+    regions = [
+        (0.00, lo, "Control-heavy region\n(few treated users)",
+         control_color, 0.5),
+        (lo, hi, "Region of common support\n(both groups present)",
+         "#555555", 0.7),
+        (hi, 1.00, "Treatment-heavy region\n(few controls)",
+         treated_color, 0.5),
+    ]
+    for x0, x1, label, color, alpha in regions:
+        mid = (x0 + x1) / 2
+        # Horizontal bracket line
+        ax_bot.annotate(
+            "", xy=(x0 + 0.005, 0.78), xytext=(x1 - 0.005, 0.78),
+            arrowprops=dict(arrowstyle="-", color=color, lw=1.2,
+                            alpha=alpha),
+        )
+        ax_bot.plot([x0 + 0.005, x0 + 0.005], [0.70, 0.86],
+                    color=color, lw=1.2, alpha=alpha)
+        ax_bot.plot([x1 - 0.005, x1 - 0.005], [0.70, 0.86],
+                    color=color, lw=1.2, alpha=alpha)
+        ax_bot.text(mid, 0.35, label, ha="center", va="center",
+                    fontsize=9.5, color="#333333")
+
+    ax_bot.set_xlabel(
+        "Propensity score  (predicted probability of opting in)",
+        fontsize=10,
+    )
 
     fig.tight_layout()
     save_figure(fig, "psm_overlap_conceptual.png")
