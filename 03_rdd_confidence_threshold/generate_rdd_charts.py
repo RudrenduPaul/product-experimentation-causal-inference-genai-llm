@@ -78,28 +78,29 @@ def make_figure_1_conceptual() -> None:
 
     # +6pp causal-effect bracket at x = CUTOFF + small offset.
     # Endpoints: premium curve ends at ~0.71, cheap curve starts at ~0.65.
-    y_prem_actual = y_prem[-1]
-    y_cheap_actual = y_cheap[0]
+    y_prem_end = y_prem[-1]
+    y_cheap_start = y_cheap[0]
+    y_mid = (y_prem_end + y_cheap_start) / 2
 
-    # Inset both arrow endpoints by a small gap so the arrowheads don't
-    # touch either data line.
-    gap = 0.012
     bx = CUTOFF + 0.012          # bracket sits just right of the cutoff
     ax_top.annotate(
-        "",
-        xy=(bx, y_cheap_actual + gap),
-        xytext=(bx, y_prem_actual - gap),
+        "", xy=(bx, y_cheap_start), xytext=(bx, y_prem_end),
         arrowprops=dict(arrowstyle="<->", color="#333333", lw=1.4),
     )
-    # Label centered directly above the bracket, just above the premium
-    # endpoint. No leader line — the bracket arrow is right below it.
-    # Centering keeps the text from drifting right into the rising blue
-    # cheap-routed line.
-    ax_top.text(
-        bx, y_prem_actual + 0.05,
+    # Label moved into the top-right empty headroom (well clear of both
+    # curves) with a thin leader line back to the bracket midpoint.
+    ax_top.annotate(
         "+6pp causal effect",
-        ha="center", va="bottom",
+        xy=(bx, y_mid),
+        xytext=(0.97, y_top_val * 0.92),
+        ha="right", va="bottom",
         fontsize=10, color="#333333", fontweight="bold",
+        arrowprops=dict(
+            arrowstyle="-",
+            color="#888888", lw=0.7,
+            shrinkA=0, shrinkB=2,
+            connectionstyle="arc3,rad=-0.2",
+        ),
     )
 
     ax_top.set_xlim(0.50, 1.00)
