@@ -76,22 +76,31 @@ def make_figure_1_conceptual() -> None:
     # Vertical cutoff line
     ax_top.axvline(CUTOFF, color="#555555", ls="--", lw=1.5, zorder=3)
 
-    # +6pp causal-effect bracket at x=0.85
-    # Endpoints: premium curve ends at ~0.71, cheap curve starts at ~0.65
-    y_prem_end = y_prem[-1]   # ~0.71
-    y_cheap_start = y_cheap[0]  # ~0.65
+    # +6pp causal-effect bracket at x = CUTOFF + small offset.
+    # Endpoints: premium curve ends at ~0.71, cheap curve starts at ~0.65.
+    y_prem_end = y_prem[-1]
+    y_cheap_start = y_cheap[0]
+    y_mid = (y_prem_end + y_cheap_start) / 2
 
-    # Draw bracket in the upper-strip area well clear of the data curves
-    bx = CUTOFF + 0.025          # horizontal offset for the bracket
+    bx = CUTOFF + 0.012          # bracket sits just right of the cutoff
     ax_top.annotate(
         "", xy=(bx, y_cheap_start), xytext=(bx, y_prem_end),
         arrowprops=dict(arrowstyle="<->", color="#333333", lw=1.4),
     )
-    ax_top.text(
-        bx + 0.018, (y_prem_end + y_cheap_start) / 2,
+    # Label moved into the top-right empty headroom (well clear of both
+    # curves) with a thin leader line back to the bracket midpoint.
+    ax_top.annotate(
         "+6pp causal effect",
-        ha="left", va="center", fontsize=10, color="#333333",
-        fontweight="bold",
+        xy=(bx, y_mid),
+        xytext=(0.97, y_top_val * 0.92),
+        ha="right", va="bottom",
+        fontsize=10, color="#333333", fontweight="bold",
+        arrowprops=dict(
+            arrowstyle="-",
+            color="#888888", lw=0.7,
+            shrinkA=0, shrinkB=2,
+            connectionstyle="arc3,rad=-0.2",
+        ),
     )
 
     ax_top.set_xlim(0.50, 1.00)
