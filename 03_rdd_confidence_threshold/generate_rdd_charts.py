@@ -90,20 +90,15 @@ def make_figure_1_conceptual() -> None:
         "", xy=(bx, y_cheap_start), xytext=(bx, y_prem_end),
         arrowprops=dict(arrowstyle="<->", color="#333333", lw=1.4),
     )
-    # Label moved into the top-right empty headroom (well clear of both
-    # curves) with a thin leader line back to the bracket midpoint.
-    ax_top.annotate(
+    # Label sits just above the bracket in the empty zone above the red
+    # premium line, starting to the right of the bracket so the dashed
+    # cutoff line doesn't cut through the text. No leader line — the
+    # bracket arrow is right below.
+    ax_top.text(
+        bx + 0.005, 0.85,
         "+6pp causal effect",
-        xy=(bx, y_mid),
-        xytext=(0.97, y_top_val * 0.92),
-        ha="right", va="bottom",
+        ha="left", va="bottom",
         fontsize=10, color="#333333", fontweight="bold",
-        arrowprops=dict(
-            arrowstyle="-",
-            color="#888888", lw=0.7,
-            shrinkA=0, shrinkB=2,
-            connectionstyle="arc3,rad=-0.2",
-        ),
     )
 
     ax_top.set_xlim(0.50, 1.00)
