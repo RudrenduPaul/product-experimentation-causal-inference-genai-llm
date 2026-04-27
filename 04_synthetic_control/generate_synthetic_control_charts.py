@@ -140,15 +140,20 @@ def make_figure_1_conceptual() -> None:
     # Vertical treatment line
     ax_top.axvline(PRE, color="#555555", ls=":", lw=1.5, zorder=3)
 
-    # Gap annotation at last week
+    # Gap annotation at last week — shrink the arrow so it does not touch
+    # either curve, and drop the label below the midpoint
     wk_last = WINDOW - 1
+    gap_top = treated[wk_last]
+    gap_bot = synth[wk_last]
+    inset = (gap_top - gap_bot) * 0.18   # pull both arrowheads inward
     ax_top.annotate(
-        "", xy=(wk_last - 0.3, synth[wk_last]),
-        xytext=(wk_last - 0.3, treated[wk_last]),
-        arrowprops=dict(arrowstyle="<->", color="#333333", lw=1.4),
+        "", xy=(wk_last - 0.3, gap_bot + inset),
+        xytext=(wk_last - 0.3, gap_top - inset),
+        arrowprops=dict(arrowstyle="<->", color="#333333", lw=1.2),
     )
+    label_y = gap_bot + (gap_top - gap_bot) * 0.32   # below midpoint
     ax_top.text(
-        wk_last - 1.2, (synth[wk_last] + treated[wk_last]) / 2,
+        wk_last - 1.2, label_y,
         "causal effect\n(gap)",
         ha="right", va="center", fontsize=10, color="#333333",
         fontweight="bold",
