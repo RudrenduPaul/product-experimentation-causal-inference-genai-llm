@@ -59,6 +59,35 @@ cells.append(nbf.v4.new_markdown_cell(
     "```"
 ))
 
+# --- Cell 1b: Conceptual figure (Figure 1) ---
+cells.append(nbf.v4.new_markdown_cell(
+    "## How synthetic control rebuilds the missing counterfactual\n"
+    "\n"
+    "![Conceptual figure showing three horizontal curves over 30 weeks. "
+    "A faint gray fan of donor workspace trajectories runs across the plot, "
+    "a dashed navy synthetic-control curve tracks a red solid treated curve "
+    "closely through the pre-treatment window (weeks 0 through 19), and "
+    "after week 20 the red treated curve rises above the dashed synthetic, "
+    "with a labeled double-arrow showing the causal effect gap at the right "
+    "edge. Below the x-axis, a strip with colored brackets labels the "
+    "pre-treatment weight-fitting window and the post-treatment "
+    "gap-emerges window."
+    "](https://raw.githubusercontent.com/RudrenduPaul/product-experimentation-"
+    "causal-inference-genai-llm/main/images/article-4/"
+    "synthetic_control_conceptual.png)\n"
+    "\n"
+    "*Figure 1: Schematic of the synthetic control construction. The gray "
+    "curves are donor workspaces that remain on the old model. The dashed "
+    "navy curve is the weighted combination of donors that best tracks the "
+    "treated unit (red) during the pre-treatment window. After the "
+    "treatment date (week 20, dotted vertical line), the weights stay "
+    "frozen and the dashed curve projects forward as the counterfactual, "
+    "while the treated unit moves upward. The gap between the two curves "
+    "in the post-treatment window is the causal-effect estimate. Weights "
+    "are fit once on pre-treatment data only and never refit using "
+    "post-treatment data.*"
+))
+
 # --- Cell 2: Setup + load data ---
 cells.append(nbf.v4.new_code_cell(
     "import numpy as np\n"
