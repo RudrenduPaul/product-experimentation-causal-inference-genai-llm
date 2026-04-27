@@ -81,7 +81,7 @@ def make_figure_1_conceptual() -> None:
     # Bottom arrow inset above the blue cheap line, top arrow extended
     # up into the empty headroom above the red premium line so the
     # bracket reads as a clearly visible vertical span.
-    y_prem_end = y_prem[-1] + 0.05
+    y_prem_end = y_prem[-1] + 0.18
     y_cheap_start = y_cheap[0] + 0.015
     y_mid = (y_prem_end + y_cheap_start) / 2
 
