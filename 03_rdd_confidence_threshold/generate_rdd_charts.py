@@ -78,8 +78,10 @@ def make_figure_1_conceptual() -> None:
 
     # +6pp causal-effect bracket at x = CUTOFF + small offset.
     # Endpoints: premium curve ends at ~0.71, cheap curve starts at ~0.65.
+    # Bottom arrow inset above the blue cheap line so its head doesn't
+    # touch the data line.
     y_prem_end = y_prem[-1]
-    y_cheap_start = y_cheap[0]
+    y_cheap_start = y_cheap[0] + 0.015
     y_mid = (y_prem_end + y_cheap_start) / 2
 
     bx = CUTOFF + 0.012          # bracket sits just right of the cutoff
