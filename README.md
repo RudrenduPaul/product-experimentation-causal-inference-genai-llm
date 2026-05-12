@@ -30,10 +30,10 @@ jupyter notebook 01_did_staged_rollouts/did_demo.ipynb
 | 5 | Cluster Randomization and SUTVA | `05_cluster_randomization/` | [cluster_randomization_demo.ipynb](05_cluster_randomization/cluster_randomization_demo.ipynb) |
 | 6 | Switchback Experiments | `06_switchback/` | `switchback_demo.ipynb` |
 | 7 | mSPRT Sequential Testing | `07_msprt/` | `msprt_demo.ipynb` |
-| 8 | Uplift Modeling | `08_uplift_modeling/` | `uplift_demo.ipynb` |
+| 8 | Uplift Modeling | `08_uplift_modeling/` | [uplift_demo.ipynb](08_uplift_modeling/uplift_demo.ipynb) |
 | 9 | Regression Adjustment | `09_regression/` | `regression_demo.ipynb` |
 | 10 | Counterfactual Reasoning | `10_counterfactual/` | `counterfactual_demo.ipynb` |
-| 11 | Instrumental Variables | `11_instrumental_variables/` | `iv_demo.ipynb` |
+| 11 | Instrumental Variables | `11_instrumental_variables/` | [iv_demo.ipynb](11_instrumental_variables/iv_demo.ipynb) |
 | 12 | Doubly Robust Estimation | `12_doubly_robust/` | [aipw_demo.ipynb](12_doubly_robust/aipw_demo.ipynb) |
 | 13 | Production Case Studies | `13_case_studies/` | `case_studies.ipynb` |
 
