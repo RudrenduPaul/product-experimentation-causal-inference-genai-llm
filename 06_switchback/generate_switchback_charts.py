@@ -84,13 +84,7 @@ def make_figure_1_conceptual() -> None:
                          where=(ai_on == 1),
                          alpha=0.30, color=C_TRUE, label="True direct effect (6 pp)")
 
-    # Carryover annotation arrows (first off-slot of each cycle)
-    carry_slots = [i for i in range(n_slots) if lag1[i] and not ai_on[i]]
-    for s in carry_slots:
-        ax_main.annotate(
-            "", xy=(s, outcome[s]), xytext=(s, base[s] + true_effect),
-            arrowprops=dict(arrowstyle="->", color=C_CARRY, lw=1.4),
-        )
+
 
     ax_main.set_xlim(-0.7, n_slots - 0.3)
     y_lo, y_hi = outcome.min() - 0.012, outcome.max() + 0.025
