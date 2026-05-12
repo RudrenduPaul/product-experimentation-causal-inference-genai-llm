@@ -71,9 +71,9 @@ def make_figure_1_conceptual() -> None:
     ax.set_ylim(-0.5, len(rows) * 1.3 + 0.2)
     ax.axis("off")
 
-    col_x = [0.15, 3.85, 7.55, 10.7]
+    col_x = [0.15, 4.00, 7.70, 10.85]
     col_labels = ["Deployment scenario", "Identifying assumption", "Causal method", "Team"]
-    col_widths = [3.5, 3.5, 3.0, 1.2]
+    col_widths = [3.55, 3.40, 2.90, 1.1]
 
     # Header row
     for cx, label, cw in zip(col_x, col_labels, col_widths):
@@ -106,8 +106,8 @@ def make_figure_1_conceptual() -> None:
 
         # Arrow → assumption
         ax.annotate(
-            "", xy=(col_x[1], y + 0.525), xytext=(col_x[0] + col_widths[0] + 0.04, y + 0.525),
-            arrowprops=dict(arrowstyle="-|>", color=color, lw=1.3),
+            "", xy=(col_x[1] + 0.05, y + 0.525), xytext=(col_x[0] + col_widths[0] + 0.06, y + 0.525),
+            arrowprops=dict(arrowstyle="-|>", color=color, lw=2.0, mutation_scale=18),
         )
 
         # Assumption box (middle-left)
@@ -126,8 +126,8 @@ def make_figure_1_conceptual() -> None:
 
         # Arrow → method
         ax.annotate(
-            "", xy=(col_x[2], y + 0.525), xytext=(col_x[1] + col_widths[1] + 0.04, y + 0.525),
-            arrowprops=dict(arrowstyle="-|>", color=color, lw=1.3),
+            "", xy=(col_x[2] + 0.05, y + 0.525), xytext=(col_x[1] + col_widths[1] + 0.06, y + 0.525),
+            arrowprops=dict(arrowstyle="-|>", color=color, lw=2.0, mutation_scale=18),
         )
 
         # Method box (middle-right)
@@ -216,7 +216,7 @@ def make_figure_2_data_driven() -> None:
     )
     ax_top.axvline(
         trim_threshold, color=trim_color, lw=2.0, ls="--",
-        label=f"99th pct trim threshold  ({trim_threshold:.2f})",
+        label=f"99th pct trim threshold ({trim_threshold:.2f})",
         zorder=3,
     )
 
@@ -225,9 +225,9 @@ def make_figure_2_data_driven() -> None:
     # Shade extreme weights region
     ax_top.axvspan(trim_threshold, df.ipw.max(), color=trim_color, alpha=0.08, zorder=0)
     ax_top.text(
-        trim_threshold + 0.08, y_max * 0.75,
+        trim_threshold - 0.15, y_max * 0.72,
         f"Extreme weights\ntrimmed here\n({(df.ipw > trim_threshold).sum():,} obs.)",
-        ha="left", va="top", fontsize=9.0, color=trim_color,
+        ha="right", va="top", fontsize=9.0, color=trim_color,
     )
 
     # Stats annotation in the near-zero region (bulk of the distribution)
@@ -242,7 +242,7 @@ def make_figure_2_data_driven() -> None:
     ax_top.set_ylabel("Count")
     ax_top.set_title(
         "IPW weight distribution: checking for extreme observations\n"
-        "(Lyft diagnostic — 50,000-user synthetic dataset)",
+        "(Lyft diagnostic, 50,000-user synthetic dataset)",
         fontsize=11.5, loc="left",
     )
     ax_top.legend(frameon=False, fontsize=10, loc="upper right")
