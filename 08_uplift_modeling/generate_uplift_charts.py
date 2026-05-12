@@ -41,81 +41,73 @@ def save_figure(fig, name: str) -> None:
 
 
 def make_figure_1_conceptual() -> None:
-    """Conceptual figure: three tiers with different treatment effect sizes.
-
-    Shows control and treated outcome distributions for light, medium, and
-    heavy users. The gap between treated and control shrinks from light to
-    heavy, illustrating that the ATE (a single number) masks the spread.
-    Two-panel layout: top shows KDE curves; bottom shows ATE vs. per-tier
-    CATE bars as a reference.
-    """
+    """Conceptual figure: three tiers with different treatment effect sizes."""
     rng = np.random.default_rng(42)
 
-    # Schematic outcome distributions per tier (not from real data)
-    # Control: lower completion rates; Treated: higher, but varying gap
+    # Schematic CATEs: light=0.10, medium=0.07, heavy=0.05 (visually distinct)
     tier_params = {
         "light":  dict(mu_c=0.46, sigma_c=0.12, mu_t=0.56, sigma_t=0.12),
         "medium": dict(mu_c=0.67, sigma_c=0.10, mu_t=0.74, sigma_t=0.10),
-        "heavy":  dict(mu_c=0.82, sigma_c=0.08, mu_t=0.89, sigma_t=0.08),
+        "heavy":  dict(mu_c=0.82, sigma_c=0.08, mu_t=0.87, sigma_t=0.08),
     }
-    n_schematic = 3000
+    n_schematic = 8000
 
-    fig, (ax_top, ax_bot) = plt.subplots(
-        nrows=2, ncols=1, figsize=(11.0, 6.8),
-        gridspec_kw={"height_ratios": [3.2, 1.0], "hspace": 0.55},
-    )
+    grid = np.linspace(0.0, 1.2, 600)
 
-    grid = np.linspace(0.0, 1.2, 500)
+    # Pre-generate all samples once so max_y and curves use the same data
+    # Use wider bandwidth for smoother curves, no hard clipping to avoid bumps
+    tier_data = {}
     max_y = 0.0
     for tier in TIER_ORDER:
         p = tier_params[tier]
-        c_vals = np.clip(rng.normal(p["mu_c"], p["sigma_c"], n_schematic), 0, 1)
-        t_vals = np.clip(rng.normal(p["mu_t"], p["sigma_t"], n_schematic), 0, 1)
-        kde_c = gaussian_kde(c_vals, bw_method=0.25)(grid)
-        kde_t = gaussian_kde(t_vals, bw_method=0.25)(grid)
+        c_vals = np.clip(rng.normal(p["mu_c"], p["sigma_c"], n_schematic), 0.05, 0.98)
+        t_vals = np.clip(rng.normal(p["mu_t"], p["sigma_t"], n_schematic), 0.05, 0.98)
+        kde_c = gaussian_kde(c_vals, bw_method=0.35)(grid)
+        kde_t = gaussian_kde(t_vals, bw_method=0.35)(grid)
+        tier_data[tier] = (kde_c, kde_t)
         max_y = max(max_y, kde_c.max(), kde_t.max())
 
-    for i, tier in enumerate(TIER_ORDER):
-        p = tier_params[tier]
-        c_vals = np.clip(rng.normal(p["mu_c"], p["sigma_c"], n_schematic), 0, 1)
-        t_vals = np.clip(rng.normal(p["mu_t"], p["sigma_t"], n_schematic), 0, 1)
-        kde_c = gaussian_kde(c_vals, bw_method=0.25)(grid)
-        kde_t = gaussian_kde(t_vals, bw_method=0.25)(grid)
+    fig, (ax_top, ax_bot) = plt.subplots(
+        nrows=2, ncols=1, figsize=(11.0, 7.0),
+        gridspec_kw={"height_ratios": [3.2, 1.0], "hspace": 0.60},
+    )
 
+    for tier in TIER_ORDER:
+        kde_c, kde_t = tier_data[tier]
         color = TIER_COLORS[tier]
-        label_c = f"{tier.capitalize()} – no feature" if i == 0 else None
-        label_t = f"{tier.capitalize()} – feature on" if i == 0 else None
-
         ax_top.fill_between(grid, kde_c, alpha=0.18, color=color)
         ax_top.fill_between(grid, kde_t, alpha=0.35, color=color)
-        ax_top.plot(grid, kde_c, color=color, lw=1.3, ls="--", alpha=0.8)
-        ax_top.plot(grid, kde_t, color=color, lw=1.8, alpha=1.0)
+        ax_top.plot(grid, kde_c, color=color, lw=1.3, ls="--", alpha=0.85)
+        ax_top.plot(grid, kde_t, color=color, lw=2.0, alpha=1.0)
 
-        # Label the gap with a bracket between the two peak means
+    # CATE bracket annotations: staggered heights with generous spacing
+    # Light (leftmost pair) highest, Heavy (rightmost) lowest — avoids text collision
+    bracket_y_offsets = {"light": 1.34, "medium": 1.20, "heavy": 1.06}
+    for tier in TIER_ORDER:
+        p = tier_params[tier]
+        color = TIER_COLORS[tier]
+        cate_val = p["mu_t"] - p["mu_c"]
+        by = max_y * bracket_y_offsets[tier]
         ax_top.annotate(
             "",
-            xy=(p["mu_t"], max_y * (0.82 - 0.22 * i)),
-            xytext=(p["mu_c"], max_y * (0.82 - 0.22 * i)),
-            arrowprops=dict(arrowstyle="<->", color=color, lw=1.4),
+            xy=(p["mu_t"], by),
+            xytext=(p["mu_c"], by),
+            arrowprops=dict(arrowstyle="<->", color=color, lw=1.6),
         )
-        cate_label = p["mu_t"] - p["mu_c"]
         ax_top.text(
-            (p["mu_c"] + p["mu_t"]) / 2,
-            max_y * (0.84 - 0.22 * i),
-            f"{tier.capitalize()}  CATE ≈ {cate_label:+.2f}",
-            ha="center", va="bottom", fontsize=9.5, color=color,
-            fontweight="bold",
+            (p["mu_c"] + p["mu_t"]) / 2, by + max_y * 0.025,
+            f"{tier.capitalize()} CATE = {cate_val:+.2f}",
+            ha="center", va="bottom", fontsize=10, color=color, fontweight="bold",
         )
 
-    # Legend via proxy artists
     from matplotlib.lines import Line2D
     legend_els = [
         Line2D([0], [0], color="gray", lw=1.3, ls="--", label="No feature (control)"),
-        Line2D([0], [0], color="gray", lw=1.8, label="Feature on (treated)"),
+        Line2D([0], [0], color="gray", lw=2.0, label="Feature on (treated)"),
     ]
     ax_top.legend(handles=legend_els, frameon=False, loc="upper right", fontsize=9.5)
     ax_top.set_xlim(0.15, 1.05)
-    ax_top.set_ylim(0, max_y * 1.05)
+    ax_top.set_ylim(0, max_y * 1.58)
     ax_top.set_xlabel("Task completion rate")
     ax_top.set_ylabel("Density")
     ax_top.set_title(
@@ -125,8 +117,8 @@ def make_figure_1_conceptual() -> None:
     ax_top.spines["top"].set_visible(False)
     ax_top.spines["right"].set_visible(False)
 
-    # Bottom: ATE vs. per-tier CATE bars
-    tier_cates = [p["mu_t"] - p["mu_c"] for p in tier_params.values()]
+    # Bottom: per-tier CATE bars vs. ATE
+    tier_cates = [tier_params[t]["mu_t"] - tier_params[t]["mu_c"] for t in TIER_ORDER]
     ate_approx = np.mean(tier_cates)
     x_pos = np.arange(len(TIER_ORDER))
     bars = ax_bot.bar(
@@ -135,20 +127,20 @@ def make_figure_1_conceptual() -> None:
         width=0.5, alpha=0.85,
     )
     ax_bot.axhline(ate_approx, color="#333333", lw=1.8, ls="--",
-                   label=f"ATE ≈ {ate_approx:+.2f}")
+                   label=f"ATE = {ate_approx:+.2f}")
     for bar, val in zip(bars, tier_cates):
         ax_bot.text(bar.get_x() + bar.get_width() / 2,
                     val + 0.003, f"{val:+.2f}",
                     ha="center", va="bottom", fontsize=9.5, fontweight="bold")
-    ax_bot.legend(frameon=False, fontsize=9.5)
+    ax_bot.legend(frameon=False, fontsize=9.5, loc="upper right")
     ax_bot.set_xticks(x_pos)
     ax_bot.set_xticklabels([t.capitalize() for t in TIER_ORDER])
     ax_bot.set_ylabel("CATE")
     ax_bot.set_title(
-        "ATE collapses the spread — the average hides that light users benefit most",
+        "ATE collapses the spread: the average hides that light users benefit most",
         fontsize=10.5, loc="left",
     )
-    ax_bot.set_ylim(0, max(tier_cates) * 1.35)
+    ax_bot.set_ylim(0, max(tier_cates) * 1.40)
     ax_bot.spines["top"].set_visible(False)
     ax_bot.spines["right"].set_visible(False)
 
@@ -226,11 +218,12 @@ def make_figure_2_data_driven() -> None:
     ax_top.set_xlabel("Predicted CATE (T-learner)")
     ax_top.set_ylabel("Density")
     ax_top.set_title(
-        "Predicted CATE distributions by engagement tier — 50,000-user synthetic dataset",
+        "Predicted CATE distributions by engagement tier: 50,000-user synthetic dataset",
         fontsize=12.5, loc="left",
     )
-    ax_top.legend(frameon=False, loc="upper center",
-                  bbox_to_anchor=(0.5, -0.08), ncol=2, fontsize=9.5)
+    # Legend in upper-left dead zone (all density curves are at x > 0.05)
+    ax_top.legend(frameon=True, loc="upper left", fontsize=9.5,
+                  framealpha=0.85, edgecolor="#cccccc")
     ax_top.spines["top"].set_visible(False)
     ax_top.spines["right"].set_visible(False)
 
