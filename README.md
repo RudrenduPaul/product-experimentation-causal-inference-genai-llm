@@ -27,12 +27,15 @@ jupyter notebook 01_did_staged_rollouts/did_demo.ipynb
 | 2 | Propensity Score Matching / IPW | `02_propensity_opt_in/` | [psm_demo.ipynb](02_propensity_opt_in/psm_demo.ipynb) |
 | 3 | Regression Discontinuity Design | `03_rdd_confidence_threshold/` | [rdd_demo.ipynb](03_rdd_confidence_threshold/rdd_demo.ipynb) |
 | 4 | Synthetic Control | `04_synthetic_control/` | [synthetic_control_demo.ipynb](04_synthetic_control/synthetic_control_demo.ipynb) |
-| 5 | Uplift Modeling | `05_uplift_modeling/` | `uplift_demo.ipynb` |
-| 6 | Regression Adjustment | `06_regression/` | `regression_demo.ipynb` |
-| 7 | Counterfactual Reasoning | `07_counterfactual/` | `counterfactual_demo.ipynb` |
-| 8 | Instrumental Variables | `08_instrumental_variables/` | `iv_demo.ipynb` |
-| 9 | Doubly Robust Estimation | `09_doubly_robust/` | `doubly_robust_demo.ipynb` |
-| 10 | Production Case Studies | `10_case_studies/` | `case_studies.ipynb` |
+| 5 | Cluster Randomization and SUTVA | `05_cluster_randomization/` | [cluster_randomization_demo.ipynb](05_cluster_randomization/cluster_randomization_demo.ipynb) |
+| 6 | Switchback Experiments | `06_switchback/` | `switchback_demo.ipynb` |
+| 7 | mSPRT Sequential Testing | `07_msprt/` | `msprt_demo.ipynb` |
+| 8 | Uplift Modeling | `08_uplift_modeling/` | `uplift_demo.ipynb` |
+| 9 | Regression Adjustment | `09_regression/` | `regression_demo.ipynb` |
+| 10 | Counterfactual Reasoning | `10_counterfactual/` | `counterfactual_demo.ipynb` |
+| 11 | Instrumental Variables | `11_instrumental_variables/` | `iv_demo.ipynb` |
+| 12 | Doubly Robust Estimation | `12_doubly_robust/` | [aipw_demo.ipynb](12_doubly_robust/aipw_demo.ipynb) |
+| 13 | Production Case Studies | `13_case_studies/` | `case_studies.ipynb` |
 
 ## Repo structure
 
@@ -47,12 +50,15 @@ product-experimentation-causal-inference-genai-llm/
   02_propensity_opt_in/
   03_rdd_confidence_threshold/
   04_synthetic_control/
-  05_uplift_modeling/
-  06_regression/
-  07_counterfactual/
-  08_instrumental_variables/
-  09_doubly_robust/
-  10_case_studies/
+  05_cluster_randomization/
+  06_switchback/
+  07_msprt/
+  08_uplift_modeling/
+  09_regression/
+  10_counterfactual/
+  11_instrumental_variables/
+  12_doubly_robust/
+  13_case_studies/
 ```
 
 ## Dataset schema
