@@ -54,27 +54,26 @@ def make_figure_1_conceptual() -> None:
     """
     Draw the IV causal graph.
 
-    Nodes: Z (instrument), D (treatment), Y (outcome), U (unobserved confounder)
-    Arrows:
-      Z → D           (relevance — solid blue)
-      D → Y           (causal effect of interest — solid blue)
-      U → D, U → Y    (confounder paths — dashed red)
-      X → D           (observed covariate — solid gray, thin)
-    The exclusion restriction is shown by the ABSENCE of a Z → Y arrow.
+    Layout: Z (left), D (center), Y (right) on one horizontal row.
+    U (unobserved confounder) is above-left to keep label whitespace clear.
+    X (observed covariate) is below-left of D.
+    U labels go ABOVE the U circle; arrows go down-right to D and Y,
+    never passing through the label area above U.
     """
-    fig, ax = plt.subplots(figsize=(10, 5.2), facecolor=BG)
+    fig, ax = plt.subplots(figsize=(10, 6.0), facecolor=BG)
     ax.set_facecolor(BG)
     ax.set_xlim(0, 10)
-    ax.set_ylim(0, 6)
+    ax.set_ylim(0, 6.5)
     ax.axis("off")
 
-    # Node positions: Z, D, Y in a horizontal line; U above; X below D
+    # U is shifted LEFT of center so its arrows go RIGHT toward D and Y,
+    # leaving clean whitespace to the LEFT and ABOVE for U's text labels.
     nodes = {
         "Z": (1.5, 3.0),
         "D": (5.0, 3.0),
         "Y": (8.5, 3.0),
-        "U": (5.0, 5.2),
-        "X": (3.0, 1.0),
+        "U": (3.2, 5.0),   # upper-left: arrows go right/down-right, labels go left
+        "X": (3.0, 1.2),
     }
 
     def draw_node(ax, label, pos, color, desc, desc2=""):
@@ -84,13 +83,21 @@ def make_figure_1_conceptual() -> None:
         ax.add_patch(circle)
         ax.text(cx, cy, label, ha="center", va="center",
                 fontsize=14, fontweight="bold", color="white", zorder=4)
-        # Description below or above the node
-        offset_y = -0.85 if label not in ("U",) else 0.85
-        ax.text(cx, cy + offset_y, desc, ha="center", va="center",
-                fontsize=8.5, color="#333333", zorder=4)
-        if desc2:
-            ax.text(cx, cy + offset_y - 0.38, desc2, ha="center", va="center",
-                    fontsize=7.5, color="#555555", style="italic", zorder=4)
+        if label == "U":
+            # Place labels ABOVE U — arrows go right/down so they never
+            # pass through the space directly above the node.
+            ax.text(cx, cy + 0.72, desc, ha="center", va="bottom",
+                    fontsize=8.5, color="#333333", zorder=4)
+            if desc2:
+                ax.text(cx, cy + 0.72 + 0.30, desc2, ha="center", va="bottom",
+                        fontsize=7.5, color="#555555", style="italic", zorder=4)
+        else:
+            offset_y = -0.82
+            ax.text(cx, cy + offset_y, desc, ha="center", va="center",
+                    fontsize=8.5, color="#333333", zorder=4)
+            if desc2:
+                ax.text(cx, cy + offset_y - 0.36, desc2, ha="center", va="center",
+                        fontsize=7.5, color="#555555", style="italic", zorder=4)
 
     draw_node(ax, "Z", nodes["Z"], BLUE,   "Rate-limit fallback", "(instrument)")
     draw_node(ax, "D", nodes["D"], BLUE,   "Premium routing",     "(endogenous)")
@@ -98,66 +105,73 @@ def make_figure_1_conceptual() -> None:
     draw_node(ax, "U", nodes["U"], RED,    "Query complexity",    "(unobserved)")
     draw_node(ax, "X", nodes["X"], GRAY,   "Query confidence",    "(observed)")
 
-    def arrow(ax, src, dst, color, style="solid", label="", lw=2.0, rad=0.0):
+    def arrow(ax, src, dst, color, style="solid", label="", lw=2.0, rad=0.0,
+              label_dx=0.0, label_dy=0.38):
         sx, sy = nodes[src]
         dx, dy = nodes[dst]
-        # Adjust endpoints to node radius
         r = 0.55
         vx, vy = dx - sx, dy - sy
         norm = (vx**2 + vy**2) ** 0.5
         ux, uy = vx / norm, vy / norm
-        sx2 = sx + r * ux
-        sy2 = sy + r * uy
-        dx2 = dx - r * ux
-        dy2 = dy - r * uy
+        sx2, sy2 = sx + r * ux, sy + r * uy
+        dx2, dy2 = dx - r * ux, dy - r * uy
         arrowstyle = dict(
             arrowstyle="-|>", color=color, lw=lw,
             connectionstyle=f"arc3,rad={rad}",
         )
         if style == "dashed":
             arrowstyle["linestyle"] = "dashed"
-        patch = mpatches.FancyArrowPatch(
-            (sx2, sy2), (dx2, dy2),
-            mutation_scale=16,
-            **arrowstyle,
-            zorder=2,
-        )
-        ax.add_patch(patch)
+        ax.add_patch(mpatches.FancyArrowPatch(
+            (sx2, sy2), (dx2, dy2), mutation_scale=16, **arrowstyle, zorder=2,
+        ))
         if label:
-            mx = (sx2 + dx2) / 2
-            my = (sy2 + dy2) / 2 + 0.28
+            mx = (sx2 + dx2) / 2 + label_dx
+            my = (sy2 + dy2) / 2 + label_dy
             ax.text(mx, my, label, fontsize=8, color=color,
                     ha="center", va="bottom", zorder=5)
 
-    # Z → D  (relevance)
-    arrow(ax, "Z", "D", BLUE,  label="+Relevance")
-    # D → Y  (causal effect)
-    arrow(ax, "D", "Y", BLUE,  label="+0.06 pp  ")
-    # U → D  (confounder → treatment, dashed red)
-    arrow(ax, "U", "D", RED,   style="dashed", rad=-0.15, label="confounder")
-    # U → Y  (confounder → outcome, dashed red)
-    arrow(ax, "U", "Y", RED,   style="dashed", rad=0.15)
-    # X → D  (observed covariate, gray, thin)
-    arrow(ax, "X", "D", GRAY,  lw=1.2, label="routing rule")
+    # Z → D (relevance) — label raised high to clear the crossing U→D arc
+    arrow(ax, "Z", "D", BLUE, label="+Relevance", label_dy=0.65)
+    # D → Y (causal effect)
+    arrow(ax, "D", "Y", BLUE, label="+0.06 pp", label_dy=0.38)
+    # U → D (confounder → treatment): no on-arrow text; explained in legend below
+    arrow(ax, "U", "D", RED, style="dashed", rad=0.12)
+    # U → Y (confounder → outcome): no on-arrow text
+    arrow(ax, "U", "Y", RED, style="dashed", rad=0.20)
+    # X → D (observed covariate) — label shifted left to clear D circle boundary
+    arrow(ax, "X", "D", GRAY, lw=1.2, label="routing rule",
+          label_dx=-0.5, label_dy=0.32)
 
-    # Exclusion-restriction annotation: cross-out line (no Z→Y arrow)
-    # Draw a curved dotted line with an X marker at the midpoint
+    # Legend: explain arrow types in bottom-left whitespace
+    legend_x, legend_y = 0.2, 0.6
+    ax.plot([legend_x, legend_x + 0.6], [legend_y, legend_y],
+            color=BLUE, lw=2, solid_capstyle="round")
+    ax.annotate("", xy=(legend_x + 0.6, legend_y), xytext=(legend_x + 0.44, legend_y),
+                arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=1.5))
+    ax.text(legend_x + 0.7, legend_y, "Causal path (solid)", fontsize=7.5,
+            color=BLUE, va="center")
+    ax.plot([legend_x, legend_x + 0.6], [legend_y - 0.38, legend_y - 0.38],
+            color=RED, lw=1.8, linestyle="dashed")
+    ax.text(legend_x + 0.7, legend_y - 0.38, "Confounder path (dashed red)",
+            fontsize=7.5, color=RED, va="center")
+
+    # Exclusion restriction: dotted arc Z→Y with ✗ — placed in upper whitespace
     zx, zy = nodes["Z"]
     yx, yy = nodes["Y"]
-    mid_x, mid_y = (zx + yx) / 2, (zy + yy) / 2 + 1.6
     ax.annotate(
         "",
-        xy=(yx - 0.6, yy + 0.3), xytext=(zx + 0.6, zy + 0.3),
+        xy=(yx - 0.6, yy + 0.5), xytext=(zx + 0.6, zy + 0.5),
         arrowprops=dict(
             arrowstyle="-", color=RED, lw=1.5,
-            connectionstyle="arc3,rad=-0.5",
+            connectionstyle="arc3,rad=-0.35",
             linestyle=(0, (4, 4)),
         ),
         zorder=1,
     )
-    ax.text(5.0, 4.35, "✗", fontsize=18, color=RED, ha="center", va="center", zorder=5)
-    ax.text(5.0, 1.55, "Exclusion restriction: no direct path Z → Y",
-            ha="center", va="center", fontsize=8.5,
+    # ✗ marker placed at arc midpoint (approx center of the dotted curve)
+    ax.text(5.0, 3.85, "✗", fontsize=16, color=RED, ha="center", va="center", zorder=5)
+    ax.text(5.0, 0.15, "Exclusion restriction: no direct Z → Y path",
+            ha="center", va="bottom", fontsize=8.0,
             color=RED, style="italic",
             bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=RED, alpha=0.8))
 
@@ -268,7 +282,7 @@ def make_figure_2_data_driven() -> None:
                  f"{h:.3f}", ha="center", va="bottom", fontsize=11, fontweight="bold")
     ax1.annotate(
         f"First-stage gap: {rate_fb0 - rate_fb1:.3f} pp",
-        xy=(0.5, max(rate_fb0, rate_fb1) * 1.22),
+        xy=(0.5, max(rate_fb0, rate_fb1) * 1.30),
         xycoords="data", ha="center", fontsize=8.5,
         color=GRAY, style="italic",
     )
@@ -288,7 +302,7 @@ def make_figure_2_data_driven() -> None:
     ):
         ax2.plot([lo, hi], [y, y], color=col, lw=3.5, solid_capstyle="round", zorder=2)
         ax2.scatter([est], [y], color=col, s=90, zorder=3)
-        ax2.text(hi + 0.001, y, f"{est:+.3f}", va="center",
+        ax2.text(hi + 0.005, y, f"{est:+.3f}", va="center",
                  fontsize=9, color=col, fontweight="bold")
 
     ax2.axvline(true_eff, color=BLUE, lw=1.4, ls="--", alpha=0.7, zorder=1)
